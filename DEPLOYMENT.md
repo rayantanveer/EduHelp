@@ -53,11 +53,13 @@ Click "Deploy" and wait for the build to complete. The app will:
 ### **File Structure for Deployment**
 ```
 eduhelp/
-├── data/                    # ✅ Include in git
-│   └── *.txt              # Help documents
+├── data/                    # ✅ Include in git (for local development)
+│   └── *.txt              # Help documents (original location)
 ├── src/                    # ✅ Include in git
 │   ├── agent.py           # Core logic
 │   ├── embeddings.py      # Embedding utilities
+│   ├── help_docs/         # Help documents (for deployment)
+│   │   └── *.txt         # Help documents
 │   ├── memory.py          # Memory management
 │   ├── retriever.py       # Document retrieval
 │   └── ui.py              # Streamlit interface

@@ -15,7 +15,7 @@ EduHelp is a fully functional AI-powered educational assistant that helps users 
 
 ```
 eduhelp/
-├── data/                       # Help documents (.txt files)
+├── data/                       # Help documents (.txt files) - local development
 │   ├── 1_help_upload_assignment.txt
 │   ├── 2_help_video_upload.txt
 │   ├── 3_help_troubleshooting_submit.txt
@@ -23,6 +23,12 @@ eduhelp/
 │   └── 5_help_deadlines.txt
 ├── src/                        # Core application modules
 │   ├── embeddings.py           # Document embedding pipeline
+│   ├── help_docs/             # Help documents (.txt files) - deployment
+│   │   ├── help_upload_assignment.txt
+│   │   ├── help_video_upload.txt
+│   │   ├── help_troubleshooting_submit.txt
+│   │   ├── help_finding_grades.txt
+│   │   └── help_deadlines.txt
 │   ├── memory.py              # Conversation memory management
 │   ├── retriever.py           # Document retrieval system
 │   ├── agent.py               # LLM agent pipeline

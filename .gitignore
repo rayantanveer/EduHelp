@@ -60,6 +60,9 @@ src/vector_index.faiss
 src/doc_store.pkl
 src/eduhelp.log
 
+# Help documents (moved to src/help_docs for deployment)
+# Note: help_docs/ should be INCLUDED in git for deployment
+
 # Backup files (if any are created during development)
 *.backup
 *.bak

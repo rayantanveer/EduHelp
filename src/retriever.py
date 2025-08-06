@@ -33,7 +33,7 @@ INDEX_FILE = "vector_index.faiss"
 DOCS_FILE = "doc_store.pkl"
 MODEL_NAME = "all-MiniLM-L6-v2"
 DEFAULT_K = 2
-DATA_DIR = "../data"  # Path to help documents
+DATA_DIR = os.path.join(os.path.dirname(__file__), "help_docs")  # Path to help documents
 
 
 def load_help_documents(data_dir: str) -> tuple[list, list]:
