@@ -1,0 +1,5 @@
+Title: Where to Find Deadlines
+All deadlines are located in the "Calendar" section:
+1. Access the calendar from your dashboard.
+2. Filter by course or assignment type.
+3. Deadlines are displayed in red for overdue items. 

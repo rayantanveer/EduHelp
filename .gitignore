@@ -1,0 +1,15 @@
+# Ignore API keys and secrets
+.env
+
+# Ignore binary vector index
+vector_index.faiss
+
+# Ignore serialized document store
+doc_store.pkl
+
+# Ignore local logs
+eduhelp.log
+
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
