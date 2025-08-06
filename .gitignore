@@ -1,15 +1,115 @@
-# Ignore API keys and secrets
-.env
+# EduHelp - AI Educational Assistant
+# Git ignore file for deployment to Streamlit Cloud
 
-# Ignore binary vector index
-vector_index.faiss
-
-# Ignore serialized document store
-doc_store.pkl
-
-# Ignore local logs
-eduhelp.log
-
-# Byte-compiled / cache files
+# Python
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment variables and secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Generated application files
+# These files are generated automatically by the app and should not be committed
+src/vector_index.faiss
+src/doc_store.pkl
+src/eduhelp.log
+
+# Backup files (if any are created during development)
+*.backup
+*.bak
+*.tmp
+
+# Streamlit specific
+.streamlit/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Model files (if any large models are downloaded)
+*.bin
+*.safetensors
+models/
+
+# Data files that might be large
+*.csv
+*.json
+*.xml
+data/raw/
+data/processed/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/

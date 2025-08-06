@@ -4,6 +4,7 @@ EduHelp Retriever Module
 
 This module handles document retrieval using FAISS vector search.
 Responsibility: Load FAISS index, perform semantic search, and return relevant documents.
+Automatically generates index if missing.
 """
 
 import os
@@ -32,6 +33,168 @@ INDEX_FILE = "vector_index.faiss"
 DOCS_FILE = "doc_store.pkl"
 MODEL_NAME = "all-MiniLM-L6-v2"
 DEFAULT_K = 2
+DATA_DIR = "../data"  # Path to help documents
+
+
+def load_help_documents(data_dir: str) -> tuple[list, list]:
+    """
+    Load help documents from the data directory.
+    
+    Args:
+        data_dir: Path to directory containing .txt files
+        
+    Returns:
+        Tuple of (documents, filenames)
+    """
+    documents = []
+    filenames = []
+    
+    try:
+        for filename in os.listdir(data_dir):
+            if filename.endswith(".txt"):
+                file_path = os.path.join(data_dir, filename)
+                with open(file_path, "r", encoding="utf-8") as f:
+                    content = f.read().strip()
+                    documents.append(content)
+                    filenames.append(filename)
+        
+        logger.info(f"[Retriever] Loaded {len(documents)} documents from {data_dir}")
+        return documents, filenames
+        
+    except Exception as e:
+        logger.error(f"[Retriever] Error loading documents from {data_dir}: {str(e)}")
+        raise
+
+
+def generate_embeddings(model: SentenceTransformer, documents: list) -> list:
+    """
+    Generate embeddings for a list of documents.
+    
+    Args:
+        model: SentenceTransformer model
+        documents: List of document texts
+        
+    Returns:
+        List of embeddings
+    """
+    try:
+        logger.info(f"[Retriever] Generating embeddings for {len(documents)} documents")
+        embeddings = model.encode(documents)
+        logger.info(f"[Retriever] Generated embeddings with shape: {embeddings.shape}")
+        return embeddings
+    except Exception as e:
+        logger.error(f"[Retriever] Error generating embeddings: {str(e)}")
+        raise
+
+
+def create_faiss_index(embeddings: list, dimension: int) -> faiss.Index:
+    """
+    Create and populate a FAISS index with embeddings.
+    
+    Args:
+        embeddings: List of embeddings to add to index
+        dimension: Dimension of the embeddings
+        
+    Returns:
+        Populated FAISS index
+    """
+    try:
+        logger.info(f"[Retriever] Creating FAISS index with dimension {dimension}")
+        index = faiss.IndexFlatL2(dimension)
+        index.add(embeddings)
+        logger.info(f"[Retriever] FAISS index created with {index.ntotal} vectors")
+        return index
+    except Exception as e:
+        logger.error(f"[Retriever] Error creating FAISS index: {str(e)}")
+        raise
+
+
+def create_document_store(filenames: list, documents: list) -> list:
+    """
+    Create a document store from filenames and documents.
+    
+    Args:
+        filenames: List of filenames
+        documents: List of document contents
+        
+    Returns:
+        List of document dictionaries
+    """
+    return [{"filename": fn, "content": doc} for fn, doc in zip(filenames, documents)]
+
+
+def save_artifacts(index: faiss.Index, doc_store: list, index_file: str, docs_file: str):
+    """
+    Save FAISS index and document store to files.
+    
+    Args:
+        index: FAISS index to save
+        doc_store: Document store to save
+        index_file: Path for FAISS index file
+        docs_file: Path for document store file
+    """
+    try:
+        # Save FAISS index
+        logger.info(f"[Retriever] Saving FAISS index to {index_file}")
+        faiss.write_index(index, index_file)
+        
+        # Save document store
+        logger.info(f"[Retriever] Saving document store to {docs_file}")
+        with open(docs_file, "wb") as f:
+            pickle.dump(doc_store, f)
+            
+        logger.info("[Retriever] All artifacts saved successfully")
+        
+    except Exception as e:
+        logger.error(f"[Retriever] Error saving artifacts: {str(e)}")
+        raise
+
+
+def generate_index_if_missing(index_file: str, docs_file: str, data_dir: str, model_name: str):
+    """
+    Generate FAISS index and document store if they don't exist.
+    
+    Args:
+        index_file: Path to FAISS index file
+        docs_file: Path to document store file
+        data_dir: Path to help documents directory
+        model_name: Name of the embedding model
+    """
+    try:
+        # Check if index files exist
+        if os.path.exists(index_file) and os.path.exists(docs_file):
+            logger.info(f"[Retriever] Index files exist, loading from disk")
+            return
+        
+        logger.info(f"[Retriever] Index files missing, generating from scratch")
+        
+        # Load documents
+        documents, filenames = load_help_documents(data_dir)
+        if not documents:
+            raise ValueError(f"No documents found in {data_dir}")
+        
+        # Initialize embedding model
+        model = SentenceTransformer(model_name)
+        logger.info(f"[Retriever] Loaded embedding model: {model_name}")
+        
+        # Generate embeddings
+        embeddings = generate_embeddings(model, documents)
+        
+        # Create document store
+        doc_store = create_document_store(filenames, documents)
+        
+        # Create FAISS index
+        dimension = embeddings[0].shape[0]
+        index = create_faiss_index(embeddings, dimension)
+        
+        # Save artifacts
+        save_artifacts(index, doc_store, index_file, docs_file)
+        
+        logger.info("[Retriever] Successfully generated and saved index files")
+        
+    except Exception as e:
+        logger.error(f"[Retriever] Error generating index: {str(e)}")
+        raise
 
 
 def load_embedding_model(model_name: str) -> SentenceTransformer:
@@ -298,11 +461,18 @@ def retrieve_documents() -> CustomFAISSRetriever:
     return create_retriever()
 
 
-# Initialize global components
+# Initialize global components with automatic index generation
 try:
+    # First, check if index files exist and generate if missing
+    generate_index_if_missing(INDEX_FILE, DOCS_FILE, DATA_DIR, MODEL_NAME)
+    
+    # Load components
     model = load_embedding_model(MODEL_NAME)
     index = load_faiss_index(INDEX_FILE)
     doc_store = load_document_store(DOCS_FILE)
+    
+    logger.info("[Retriever] All components initialized successfully")
+    
 except Exception as e:
     logger.error(f"[Retriever] Failed to initialize components: {str(e)}")
     raise

@@ -63,13 +63,19 @@ Create a `.env` file in the project root:
 OPENAI_API_KEY=your_openai_api_key_here
 ```
 
-### 4. Generate Embeddings
+### 4. Run the Application (Automatic Setup)
+The application will automatically generate the FAISS index and document store if they don't exist.
+
+```bash
+cd src
+streamlit run ui.py
+```
+
+**Note**: If you want to manually generate embeddings first, you can run:
 ```bash
 cd src
 python embeddings.py
 ```
-
-### 5. Run the Application
 ```bash
 cd src
 streamlit run ui.py
